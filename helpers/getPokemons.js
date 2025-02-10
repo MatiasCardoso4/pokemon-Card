@@ -1,6 +1,6 @@
 
 export async function getPokemons(callback) {
-  const URL = "https://pokeapi.co/api/v2/pokemon/11";
+  const URL = "https://pokeapi.co/api/v2/pokemon/15";
   try {
     const req = new XMLHttpRequest();
     req.open("GET", URL);
