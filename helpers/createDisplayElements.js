@@ -1,64 +1,82 @@
+import { getPokemonById, getPokemons} from "./getPokemons.js";
 
+const name = document.querySelector(".pokemon-name");
+const image = document.querySelector(".pokemon-image");
+const id = document.querySelector(".id");
+const abilities = document.querySelector(".abilities");
+const stats = document.querySelector(".stats");
+const card = document.querySelector(".pokemon-card");
 const cardContainer = document.querySelector(".pokemon-card-container");
 
-export let pokemonID = 1;
+const leftArrow = document.querySelector(".left-arrow");
+const rightArrow = document.querySelector(".right-arrow");
+
+
+const data = await getPokemons()
+console.log(data.results);
+
+
+
+
+function getPokemonId(index) {
+  const match = data.results[index].url.match(/\/(\d+)\/?$/);
+  
+  return match ? match[1] : null;
+}
+
+const  firstMatch = getPokemonId(0)
+const  secondMatch = getPokemonId(1303)
+
+const firstPokemonId = firstMatch
+const lastPokemonId = secondMatch
+
+export let pokemonId = firstPokemonId
 
 export function createElement(pokemon) {
-
   cardContainer.innerHTML = "";
-
-  const card = document.createElement("div");
-  card.classList.add("pokemon-card");
 
   const abilities = pokemonAbilities(pokemon);
   const stats = pokemonStats(pokemon);
-  const name = document.createElement("h2");
-  const image = document.createElement("img");
-  const id = document.createElement("p");
-
-  const { leftArrow, rightArrow } = createArrows();
-  rightArrow.addEventListener("click", () => nextPokemon(pokemon));
 
   name.textContent = pokemon.name;
-  image.src = pokemon.sprites.front_default;
+  image.src = pokemon.sprites.front_default  ;
+  image.alt = pokemon.name
   id.textContent = pokemon.id;
-  card.append(name, id, leftArrow, image, rightArrow, abilities, stats);
-  cardContainer.appendChild(card);
+  card.append(name, id, image, abilities, stats);
+  cardContainer.append(card);
 }
 
 function pokemonAbilities(pokemon) {
-  const abilities = document.createElement("p");
-  abilities.textContent = pokemon.abilities
-    .map((ability) => ability.ability.name)
-    .join(", ");
+  abilities.textContent = pokemon.abilities.map(
+    (ability) => ability.ability.name
+  );
   return abilities;
 }
 
 function pokemonStats(pokemon) {
-  const stats = document.createElement("p");
   stats.textContent = pokemon.stats.map((stat) => stat.stat.name);
   return stats;
 }
 
-function createArrows() {
-  const leftArrow = document.createElement("div");
-  leftArrow.classList.add("left-arrow");
-  leftArrow.append();
-
-  leftArrow.addEventListener("click", () => {
-    console.log("left arrow");
-  });
-
-  const rightArrow = document.createElement("div");
-  rightArrow.classList.add("right-arrow");
-
-  return {
-    leftArrow,
-    rightArrow,
-  };
+export function increase() {
+  pokemonId++
+  if(pokemonId > lastPokemonId){
+    pokemonId = firstPokemonId
+  }
+  getPokemonById(pokemonId)
 }
 
-export async function nextPokemon(pokemon) {
-  pokemonID = pokemonID + 1;
-  createElement(pokemon);
+export function decrease() {
+  pokemonId--;
+  if(pokemonId < firstPokemonId){
+    pokemonId = lastPokemonId
+  }
+  getPokemonById(pokemonId)
 }
+
+rightArrow.addEventListener("click", increase);
+rightArrow.addEventListener("click", ()=> {
+  rightArrow.classList.toggle('scale')
+});
+leftArrow.addEventListener("click", decrease);
+getPokemonById()
